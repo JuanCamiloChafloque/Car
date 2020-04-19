@@ -1,0 +1,6 @@
+proc mi_funcion(angle, dist)
+	turn_rt angle
+	move_fw dist
+end
+
+mi_funcion(50, 500)
