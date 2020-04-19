@@ -16,9 +16,13 @@ public class MoveBw implements ASTNode {
 	}
 
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
-		car.backwards((float)operand1.execute(symbolTable));
-		return null;
+	public Object execute(Map<String, Object> symbolTable) throws Exception{
+		try {
+			car.backwards((float)operand1.execute(symbolTable));
+			return null;
+		}catch(Exception e) {
+			throw new Exception("No se puede usar MoveBw con variables no númericas.");
+		}
 	}
 
 }

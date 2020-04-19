@@ -12,9 +12,13 @@ public class Echo implements ASTNode {
 	}
 
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
-		System.out.println(data.execute(symbolTable));
-		return null;
+	public Object execute(Map<String, Object> symbolTable) throws Exception {
+		try {
+			System.out.println(data.execute(symbolTable));
+			return null;
+		}catch(Exception e) {
+			throw new Exception("No se puede imprimir.");
+		}
 	}
 
 }

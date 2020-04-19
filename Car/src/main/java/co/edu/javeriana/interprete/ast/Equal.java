@@ -14,8 +14,12 @@ public class Equal implements ASTNode {
 	}
 
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
-		return (Object)operand1.execute(symbolTable).equals((Object)operand2.execute(symbolTable));
+	public Object execute(Map<String, Object> symbolTable) throws Exception{
+		try {
+			return (Object)operand1.execute(symbolTable).equals((Object)operand2.execute(symbolTable));
+		}catch(Exception e) {
+			throw new Exception("No se puede usar Equal con estas variables.");
+		}
 	}
 
 }

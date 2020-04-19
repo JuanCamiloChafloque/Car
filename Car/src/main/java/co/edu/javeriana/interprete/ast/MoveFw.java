@@ -16,9 +16,13 @@ public class MoveFw implements ASTNode {
 	}
 
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
-		car.forward((float)operand1.execute(symbolTable));
-		return null;
+	public Object execute(Map<String, Object> symbolTable) throws Exception{
+		try {
+			car.forward((float)operand1.execute(symbolTable));
+			return null;
+		}catch(Exception e) {
+			throw new Exception("No se puede usar MoveFw con variables no númericas.");
+		}
 	}
 
 }

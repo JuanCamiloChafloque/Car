@@ -1,4 +1,12 @@
+def_var num := --4
+if(num > --5)
+	echo "Mayor"
+else
+	echo "Menor"
+endif
+
 proc mi_funcion(angle, dist)
+	set_rgba #f268ae,1.0
 	turn_rt angle
 	move_fw dist
 end

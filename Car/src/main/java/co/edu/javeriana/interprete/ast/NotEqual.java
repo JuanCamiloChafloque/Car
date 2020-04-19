@@ -14,9 +14,13 @@ public class NotEqual implements ASTNode {
 	}
 
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
-		boolean a = ((Object)operand1.execute(symbolTable)).equals(((Object)operand2.execute(symbolTable))); 
-		return !((boolean) a);
+	public Object execute(Map<String, Object> symbolTable) throws Exception{
+		try {
+			boolean a = ((Object)operand1.execute(symbolTable)).equals(((Object)operand2.execute(symbolTable))); 
+			return !((boolean) a);
+		}catch(Exception e) {
+			throw new Exception("No se puede usar NotEqual con variables no booleanas.");
+		}
 	}
 
 }

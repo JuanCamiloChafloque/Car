@@ -4,7 +4,7 @@
 
 grammar Car;
 
-@parser::header {
+@parser::header {	
 	import java.util.Map;
 	import java.util.HashMap;
 	import co.edu.javeriana.interprete.ast.*;
@@ -26,8 +26,12 @@ program:
 	List<ASTNode> body = new ArrayList<ASTNode>();
 }(sentence{body.add($sentence.node);})* 
 {
-	for(ASTNode n: body){
-		n.execute(symbolTable);
+	try{
+		for(ASTNode n: body){
+			n.execute(symbolTable);
+		}
+	}catch(Exception e){
+		System.out.println(e.getMessage());
 	}
 };
 
@@ -39,7 +43,7 @@ sentence returns[ASTNode node]:
 		|move_bw {$node = $move_bw.node;}
 		|turn_lt {$node = $turn_lt.node;}
 		|turn_rt {$node = $turn_rt.node;}
-		//|set_rgba {$node = $set_rgba.node;}
+		|set_rgba {$node = $set_rgba.node;}
 		|echo {$node = $echo.node;}
 		|conditional {$node = $conditional.node;}
 		|loop {$node = $loop.node;}
@@ -51,12 +55,7 @@ move_fw returns[ASTNode node]: MOVEFW expression {$node = new MoveFw($expression
 move_bw returns[ASTNode node]: MOVEBW expression {$node = new MoveBw($expression.node, car);};
 turn_lt returns[ASTNode node]: TURNLT expression {$node = new TurnLt($expression.node, car);};
 turn_rt returns[ASTNode node]: TURNRT expression {$node = new TurnRt($expression.node, car);};		
-//set_rgba returns[ASTNode node]: SETRGBA COLOR COMMA NUM {$node = new SetRgba(Integer.valueOf($COLOR.text.substring(1,3),16).floatValue(),
-//																			 Integer.valueOf($COLOR.text.substring(3,5),16).floatValue(),
-//																			 Integer.valueOf($COLOR.text.substring(5,7),16).floatValue(),
-//																			 Float.parseFloat($NUM.text)*255,
-//																			 car
-//																			);};
+set_rgba returns[ASTNode node]: SETRGBA e1 = expression COMMA e2 = expression {$node = new SetRgba($e1.node, $e2.node, car);};
 var_decl returns[ASTNode node]: DEFVAR ID {$node = new VariableDecl($ID.text);};
 var_assign returns[ASTNode node]: ID ASSIGN expression {$node = new VariableAssign($ID.text, $expression.node);};
 var_decl_assign returns[ASTNode node]: DEFVAR ID ASSIGN expression {$node = new VariableAssign($ID.text, $expression.node);};
@@ -139,10 +138,12 @@ factor returns[ASTNode node]:
 				)*;	
 
 term returns[ASTNode node]:
-			NUM {$node = new Constant(Float.parseFloat($NUM.text));}
+			MINUS expression {$node = new Inv($expression.node);}
+			|NUM {$node = new Constant(Float.parseFloat($NUM.text));}
 			|STRING {$node = new Constant(String.valueOf($STRING.text).replace("\"",""));}
 			|BOOLEAN {$node = new Constant(Boolean.parseBoolean($BOOLEAN.text));}
 			|ID {$node = new VariableRef($ID.text);}
+			|COLOR {$node = new Constant(String.valueOf($COLOR.text).replace("\"",""));}
 			|PAR_OP expression {$node = $expression.node;} PAR_CL;
 
 		   

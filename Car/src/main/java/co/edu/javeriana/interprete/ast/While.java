@@ -15,13 +15,18 @@ public class While implements ASTNode {
 	}
 
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
-		while((boolean) condition.execute(symbolTable)) {
-			for(ASTNode n: body) {
-				n.execute(symbolTable);
+	public Object execute(Map<String, Object> symbolTable) throws Exception{
+		try {
+			while((boolean) condition.execute(symbolTable)) {
+				for(ASTNode n: body) {
+					n.execute(symbolTable);
+				}
 			}
+			return null;
+		}catch(Exception e) {
+			throw new Exception("Error ejecutando el ciclo.");
+
 		}
-		return null;
 	}
 
 }

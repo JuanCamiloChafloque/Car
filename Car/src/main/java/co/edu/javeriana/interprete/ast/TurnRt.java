@@ -16,9 +16,13 @@ public class TurnRt implements ASTNode {
 	}
 
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
-		car.right((float)operand1.execute(symbolTable));
-		return null;
+	public Object execute(Map<String, Object> symbolTable) throws Exception{
+		try {
+			car.right((float)operand1.execute(symbolTable));
+			return null;
+		}catch(Exception e) {
+			throw new Exception("No se puede usar TurnRt con variables no númericas.");
+		}
 	}
 
 }

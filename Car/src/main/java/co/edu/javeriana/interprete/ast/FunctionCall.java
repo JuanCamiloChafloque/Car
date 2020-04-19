@@ -15,21 +15,25 @@ public class FunctionCall implements ASTNode {
 	}
 
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
+	public Object execute(Map<String, Object> symbolTable) throws Exception {
 		
-		Function encontrada = (Function) symbolTable.get(name);
-		List<String> paramsEncontrados = encontrada.getArgs();
-		List<ASTNode> bodyEncontrado = encontrada.getBody();
-		
-		for(int i = 0; i < paramsEncontrados.size(); i++) {
-			symbolTable.put(paramsEncontrados.get(i), (this.params.get(i)).execute(symbolTable));
-		}
-		
-		for(ASTNode n: bodyEncontrado) {
-			n.execute(symbolTable);
-		}
+		try {
+			Function encontrada = (Function) symbolTable.get(name);
+			List<String> paramsEncontrados = encontrada.getArgs();
+			List<ASTNode> bodyEncontrado = encontrada.getBody();
+			
+			for(int i = 0; i < paramsEncontrados.size(); i++) {
+				symbolTable.put(paramsEncontrados.get(i), (this.params.get(i)).execute(symbolTable));
+			}
+			
+			for(ASTNode n: bodyEncontrado) {
+				n.execute(symbolTable);
+			}
 
-		return null;
+			return null;
+		}catch(Exception e) {
+			throw new Exception("Error llamando función.");
+		}
 	}
 
 }

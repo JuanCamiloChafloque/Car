@@ -17,17 +17,21 @@ public class If implements ASTNode {
 	}
 
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
-		if((boolean) condition.execute(symbolTable)) {
-			for(ASTNode n: body) {
-				n.execute(symbolTable);
+	public Object execute(Map<String, Object> symbolTable) throws Exception{
+		try {
+			if((boolean) condition.execute(symbolTable)) {
+				for(ASTNode n: body) {
+					n.execute(symbolTable);
+				}
+			} else {
+				for(ASTNode n: elseBody) {
+					n.execute(symbolTable);
+				}
 			}
-		} else {
-			for(ASTNode n: elseBody) {
-				n.execute(symbolTable);
-			}
+			return null;
+		}catch(Exception e) {
+			throw new Exception("Error ejecutando el condicional.");
 		}
-		return null;
 	}
 
 }

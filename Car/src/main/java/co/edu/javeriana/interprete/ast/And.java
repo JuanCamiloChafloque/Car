@@ -14,8 +14,12 @@ public class And implements ASTNode {
 	}
 
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
-		return (boolean)operand1.execute(symbolTable)&&(boolean)operand2.execute(symbolTable);
+	public Object execute(Map<String, Object> symbolTable) throws Exception {
+		try {
+			return (boolean)operand1.execute(symbolTable)&&(boolean)operand2.execute(symbolTable);
+		}catch(Exception e) {
+			throw new Exception("No se puede usar And con variables no booleanas.");
+		}
 	}
 
 }

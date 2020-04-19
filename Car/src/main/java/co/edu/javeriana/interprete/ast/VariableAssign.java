@@ -14,9 +14,13 @@ public class VariableAssign implements ASTNode {
 	}
 
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
-		symbolTable.put(name, expression.execute(symbolTable));
-		return null;
+	public Object execute(Map<String, Object> symbolTable) throws Exception{
+		try {
+			symbolTable.put(name, expression.execute(symbolTable));
+			return null;
+		}catch(Exception e) {
+			throw new Exception("Error no se pudo asignar la variable.");
+		}
 	}
 
 }
