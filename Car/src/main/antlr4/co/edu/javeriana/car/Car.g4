@@ -49,79 +49,79 @@ sentence returns[ASTNode node]:
 		|loop {$node = $loop.node;}
 		|func_def {$node = $func_def.node;}
 		|func_call {$node = $func_call.node;};
-
-echo returns[ASTNode node]: ECHO expression {$node = new Echo($expression.node);};
-move_fw returns[ASTNode node]: MOVEFW expression {$node = new MoveFw($expression.node, car);};
-move_bw returns[ASTNode node]: MOVEBW expression {$node = new MoveBw($expression.node, car);};
-turn_lt returns[ASTNode node]: TURNLT expression {$node = new TurnLt($expression.node, car);};
-turn_rt returns[ASTNode node]: TURNRT expression {$node = new TurnRt($expression.node, car);};		
-set_rgba returns[ASTNode node]: SETRGBA e1 = expression COMMA e2 = expression {$node = new SetRgba($e1.node, $e2.node, car);};
+		
 var_decl returns[ASTNode node]: DEFVAR ID {$node = new VariableDecl($ID.text);};
 var_assign returns[ASTNode node]: ID ASSIGN expression {$node = new VariableAssign($ID.text, $expression.node);};
 var_decl_assign returns[ASTNode node]: DEFVAR ID ASSIGN expression {$node = new VariableAssign($ID.text, $expression.node);};
+move_fw returns[ASTNode node]: MOVEFW expression {$node = new MoveFw($expression.node, car);};
+move_bw returns[ASTNode node]: MOVEBW expression {$node = new MoveBw($expression.node, car);};
+turn_lt returns[ASTNode node]: TURNLT expression {$node = new TurnLt($expression.node, car);};
+turn_rt returns[ASTNode node]: TURNRT expression {$node = new TurnRt($expression.node, car);};
+set_rgba returns[ASTNode node]: SETRGBA e1 = expression COMMA e2 = expression {$node = new SetRgba($e1.node, $e2.node, car);};
+echo returns[ASTNode node]: ECHO expression {$node = new Echo($expression.node);};
 
 func_def returns[ASTNode node]:
 			{
 				List<String> params = new ArrayList<String>();
 				List<ASTNode> body = new ArrayList<ASTNode>();
 			}
-			PROC id1=ID PAR_OP (id2=ID{params.add($id2.text);})* (COMMA* id3=ID{params.add($id3.text);})* PAR_CL
-			(s1=sentence {body.add($s1.node);})*
+			PROC id1 = ID PAR_OP (id2 = ID {params.add($id2.text);} COMMA?)* PAR_CL
+			(s1 = sentence {body.add($s1.node);})*
 			END
 			{
-				$node = new Function($id1.text, params, body);	
-			}; 
+				$node = new Function($id1.text, params, body);
+			};
 
 func_call returns[ASTNode node]:
 			{
 				List<ASTNode> params = new ArrayList<ASTNode>();
 			}
-			ID PAR_OP (e1=expression{params.add($e1.node);})* (COMMA* e2=expression{params.add($e2.node);})* PAR_CL
+			ID PAR_OP (e1 = expression {params.add($e1.node);} COMMA?)* PAR_CL
 			{
 				$node = new FunctionCall($ID.text, params);
 			};
-			
+
 loop returns[ASTNode node]:
 			WHILE PAR_OP logic PAR_CL
 			{
-				List<ASTNode> whileBody = new ArrayList<ASTNode>();
-			} 
-			(s1=sentence {whileBody.add($s1.node);})* 
+				List<ASTNode> body = new ArrayList<ASTNode>();
+			}
+			(s1 = sentence {body.add($s1.node);})*
 			ENDWHILE
 			{
-				$node = new While($logic.node, whileBody);
+				$node = new While($logic.node, body);
 			};
 
 conditional returns[ASTNode node]:
 			IF PAR_OP logic PAR_CL
 			{
-				List<ASTNode> ifBody = new ArrayList<ASTNode>();
+				List<ASTNode> body = new ArrayList<ASTNode>();
 				List<ASTNode> elseBody = new ArrayList<ASTNode>();
 			}
-			(s1=sentence {ifBody.add($s1.node);})*
+			(s1 = sentence {body.add($s1.node);})*
 			(ELSE
-			(s2=sentence {elseBody.add($s2.node);})*)*
+			(s2 = sentence {elseBody.add($s2.node);})*)*
 			ENDIF
 			{
-				$node = new If($logic.node, ifBody, elseBody);
+				$node = new If($logic.node, body, elseBody);
 			};
 
 logic returns[ASTNode node]:
-			t1 = comparison {$node = $t1.node;}
-			(AND t2=comparison {$node = new And($t1.node, $t2.node);}
-			|
-			OR t2=comparison {$node = new Or($t1.node, $t2.node);}	
+			t1 = comparison{$node = $t1.node;}
+			(AND t2 = comparison {$node = new And($t1.node, $t2.node);}
+			|	
+			OR t2 = comparison {$node = new Or($t1.node, $t2.node);}
 			)*;
 
 comparison returns[ASTNode node]:
-			t1 = expression {$node = $t1.node;}
-			(GT t2=expression {$node = new GreaterThan($t1.node, $t2.node);}
-			|LT t2=expression {$node = new LessThan($t1.node, $t2.node);}
-			|GEQ t2=expression {$node = new GreaterEqualThan($t1.node, $t2.node);}
-			|LEQ t2 = expression {$node = new LessEqualThan ($t1.node, $t2.node);}
-			|EQ t2 = expression {$node = new Equal ($t1.node, $t2.node);}
-			|NEQ t2 = expression {$node = new NotEqual ($t1.node, $t2.node);})
-			|NOT t2 = expression {$node = new Not ($t2.node);};
+			t1 = expression{$node = $t1.node;}
+			(GT t2 = expression {$node = new GreaterThan($t1.node, $t2.node);}
+			|LT t2 = expression {$node = new LessThan($t1.node, $t2.node);}	
+			|LEQ t2 = expression {$node = new LessEqualThan($t1.node, $t2.node);}
+			|GEQ t2 = expression {$node = new GreaterEqualThan($t1.node, $t2.node);}	
+			|EQ  t2 = expression {$node = new Equal($t1.node, $t2.node);}
+			|NEQ t2 = expression {$node = new NotEqual($t1.node, $t2.node);}
+			)*;
 
 expression returns[ASTNode node]:
 			t1 = factor {$node = $t1.node;}
@@ -139,6 +139,7 @@ factor returns[ASTNode node]:
 
 term returns[ASTNode node]:
 			MINUS expression {$node = new Inv($expression.node);}
+			|NOT comparison {$node = new Not ($comparison.node);}
 			|NUM {$node = new Constant(Float.parseFloat($NUM.text));}
 			|STRING {$node = new Constant(String.valueOf($STRING.text).replace("\"",""));}
 			|BOOLEAN {$node = new Constant(Boolean.parseBoolean($BOOLEAN.text));}
@@ -146,7 +147,6 @@ term returns[ASTNode node]:
 			|COLOR {$node = new Constant(String.valueOf($COLOR.text).replace("\"",""));}
 			|PAR_OP expression {$node = $expression.node;} PAR_CL;
 
-		   
 MOVEFW:'move_fw';
 MOVEBW:'move_bw';
 TURNLT:'turn_lt';
